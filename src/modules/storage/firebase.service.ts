@@ -1,7 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as admin from 'firebase-admin';
-import { join } from 'path';
 
 @Injectable()
 export class FirebaseService implements OnModuleInit {
@@ -12,22 +11,31 @@ export class FirebaseService implements OnModuleInit {
   onModuleInit() {
     if (admin.apps.length) return;
 
-    const serviceAccountPath = this.configService.get<string>(
-      'FIREBASE_SERVICE_ACCOUNT_PATH',
+    const serviceAccountBase64 = this.configService.get<string>(
+      'FIREBASE_SERVICE_ACCOUNT_JSON',
     );
 
-    if (!serviceAccountPath) {
-      return this.logger.warn('FIREBASE_SERVICE_ACCOUNT_PATH non configuré');
+    if (!serviceAccountBase64) {
+      return this.logger.warn('FIREBASE_SERVICE_ACCOUNT_JSON non configuré');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const serviceAccount = require(join(process.cwd(), serviceAccountPath));
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    this.logger.log('Firebase Admin initialisé');
+    try {
+      const serviceAccount = JSON.parse(
+        Buffer.from(serviceAccountBase64, 'base64').toString('utf-8'),
+      );
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+      this.logger.log('Firebase Admin initialisé');
+    } catch (error) {
+      this.logger.error(
+        'Erreur lors du parsing du service account Firebase',
+        error,
+      );
+    }
   }
 
   get firestore() {
     return admin.firestore();
   }
 }
-

@@ -12,11 +12,17 @@ storage/
 
 ## Configuration
 
-Variable d'environnement requise :
+Variable d'environnement requise (service account encodé en Base64) :
 
 ```bash
-FIREBASE_SERVICE_ACCOUNT_PATH=./src/modules/storage/config/your-service-account.json
+# Générer le Base64 depuis votre fichier JSON :
+base64 -i your-service-account.json
+
+# Ajouter dans .env ou Railway :
+FIREBASE_SERVICE_ACCOUNT_JSON=eyJ0eXBlIjoic2VydmljZV9hY2NvdW50Ii...
 ```
+
+> ⚠️ Ne jamais commiter le fichier JSON du service account dans le repo.
 
 ## Utilisation
 

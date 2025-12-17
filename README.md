@@ -128,8 +128,9 @@ OPENAI_API_KEY=sk-...
 PORT=3000
 NODE_ENV=development
 
-# Storage
-STORAGE_PATH=./storage
+# Firebase (service account JSON encodé en Base64)
+# Générer avec: base64 -i your-service-account.json
+FIREBASE_SERVICE_ACCOUNT_JSON=eyJ0eXBlIjoic2VydmljZV9hY2NvdW50Ii...
 ```
 
 ## 🔮 Roadmap
